@@ -27,28 +27,21 @@ class ForceTouchMap extends React.Component {
     }
 
     componentDidMount() {
-        // ReactDOM.findDOMNode(this).addEventListener("webkitmouseforcechanged", this.forceChanged);
         this.nv.addEventListener("webkitmouseforcechanged", this.forceChanged);
         this.nv2.addEventListener("webkitmouseforcechanged", this.forceChanged);
-        this.panRef.addEventListener("webkitmouseforcechanged", this.forceChanged);
         this.mapDivRef.addEventListener("webkitmouseforcechanged", this.forceChanged);
-        // this.mapRef.addEventListener("onMouseDown", this.panClicked);
         this.getcurrentLocation();
     }
 
     componentWillUnmount() {
-        // ReactDOM.findDOMNode(this).removeEventListener("webkitmouseforcechanged", this.forceChanged);
         this.nv.removeEventListener("webkitmouseforcechanged", this.forceChanged);
         this.nv2.removeEventListener("webkitmouseforcechanged", this.forceChanged);
-        this.panRef.removeEventListener("webkitmouseforcechanged", this.forceChanged);
         this.mapDivRef.removeEventListener("webkitmouseforcechanged", this.forceChanged);
-        // this.mapRef.removeEventListener("onMouseDown", this.panClicked);
     }
 
     render() {
         return <div>
             <div id="mapDiv" ref={elem => this.mapDivRef = elem} onMouseUp={this.handleMouseEvent} onMouseDown={this.handleMouseEvent} onMouseMove={this.handleMouseEvent}>
-                {/* <Map google={this.props.google} zoom={this.state.zoom}></Map> */}
                 <Map
                     ref={elem => this.mapRef = elem}
                     google={this.props.google}
@@ -57,8 +50,8 @@ class ForceTouchMap extends React.Component {
                     onMousemove={this.mouseMove}
                     initalCenter={this.state.center}
                     center={this.state.center}
-                    mapTypeControl={true}
-                    streetViewControl={true}
+                    mapTypeControl={false}
+                    streetViewControl={false}
                     fullscreenControl={false}
                     onZoomChanged={this.zoomChanged}
                     onCenter_changed={this.centerChanged}
@@ -68,15 +61,8 @@ class ForceTouchMap extends React.Component {
                 ></Map>
             </div>
             <div>
-                {/* <Button ref={this.elementRef}>Force Touch Button</Button>; */}
                 <Button id="zoomIn" ref={elem => this.nv = elem} variant="contained">Zoom in</Button>
                 <Button id="zoomOut" ref={elem => this.nv2 = elem} variant="contained">Zoom out</Button>
-                <Button
-                    ref={elem => this.panRef = elem}
-                    id="pan"
-                    variant="contained"
-                    onClick={this.panClicked}>Pan
-                </Button>
                 <FormGroup>
                     <FormControlLabel control={<Switch checked={this.state.mapGesture === "auto" ? true : false} onChange={this.onChange} />} label="Gesture" />
                 </FormGroup>
@@ -120,35 +106,25 @@ class ForceTouchMap extends React.Component {
                         minZoom: newZoom
                     })
                 }
-            } else if (event.target.id === "pan") {
-                console.log(process.env.REACT_APP_GOOGLE_API_KEY);
-                // if (this.state.map) {
-
-                //     const panBy = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetWidth / 6));
-                //     this.mapRef.map.panBy(panBy, panBy);
-
-                // } else {
-                //     console.log("ref null");
-                // }
             } else if (event.currentTarget.id === "mapDiv") {
                 var panByX = 0;
                 var panByY = 0;
 
                 if (this.state.mouseMoveX) {
-                    if (this.state.mouseMoveX > 0) {
+                    if (this.state.mouseMoveX > panningDiagonalSensitivity) {
                         panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetWidth / 8));
 
-                    } else if (this.state.mouseMoveX < 0) {
+                    } else if (this.state.mouseMoveX < -panningDiagonalSensitivity) {
                         panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetWidth / 8));
 
                     }
                 }
 
                 if (this.state.mouseMoveY) {
-                    if (this.state.mouseMoveY > 0) {
+                    if (this.state.mouseMoveY > panningDiagonalSensitivity) {
                         panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetHeight / 8));
 
-                    } else if (this.state.mouseMoveY < 0) {
+                    } else if (this.state.mouseMoveY < -panningDiagonalSensitivity) {
                         panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetHeight / 8));
                     }
                 }
@@ -158,10 +134,6 @@ class ForceTouchMap extends React.Component {
             }
 
         }
-    }
-
-    doubleClicked = (event) => {
-        console.log("double clicked");
     }
 
     mouseMove = (props, map, event) => {
@@ -233,6 +205,7 @@ class ForceTouchMap extends React.Component {
 
                 // console.log("Mouse Move1", "Start: ", this.state.mouseDownX, this.state.mouseDownY, "End: ", this.state.mouseMoveX, this.state.mouseMoveY);
                 // console.log("Mouse Move2", "Start: ", this.state.mouseDownX - this.state.mouseDownX, this.state.mouseDownY - this.state.mouseDownY, "End: ", this.state.mouseMoveX - this.state.mouseDownX, this.state.mouseMoveY - this.state.mouseDownY);
+                console.log("Mouse Move2", "Start: ", this.state.mouseDownX - this.state.mouseDownX, this.state.mouseDownY - this.state.mouseDownY, "End: ", this.state.mouseMoveX, this.state.mouseMoveY);
 
             }
         }
@@ -280,6 +253,7 @@ class ForceTouchMap extends React.Component {
 // const out_max = 22;
 
 const forceMultipler = 5;
+const panningDiagonalSensitivity = 50
 
 const in_min = 0;
 const in_max = forceMultipler * 3;
