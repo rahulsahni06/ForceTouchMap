@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Button, FormGroup, FormControlLabel, Switch } from '@mui/material';
-import ReactDOM from 'react-dom';
-import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
+import { Map, GoogleApiWrapper } from 'google-maps-react';
 
 class ForceTouchMap extends React.Component {
     
@@ -223,6 +222,8 @@ class ForceTouchMap extends React.Component {
         this.setState({
             mapGesture: mapGesture
         })
+
+        console.log(this.state.mapGesture);
     }
 
 
@@ -260,9 +261,6 @@ const in_max = forceMultipler * 3;
 const out_min = 2;
 const out_max = 22;
 
-function panBy(num, in_min, in_max, out_min, out_max) {
-    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
 
 function rangeMap(num, in_min, in_max, out_min, out_max) {
     return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
