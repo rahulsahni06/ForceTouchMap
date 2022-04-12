@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { Button, FormGroup, FormControlLabel, Switch } from '@mui/material';
 import { Map, GoogleApiWrapper } from 'google-maps-react';
+import './ForceTouchMap.css';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 class ForceTouchMap extends React.Component {
     
@@ -42,6 +45,7 @@ class ForceTouchMap extends React.Component {
         return <div>
             <div id="mapDiv" ref={elem => this.mapDivRef = elem} onMouseUp={this.handleMouseEvent} onMouseDown={this.handleMouseEvent} onMouseMove={this.handleMouseEvent}>
                 <Map
+                    className="mapDiv2"
                     ref={elem => this.mapRef = elem}
                     google={this.props.google}
                     zoom={this.state.zoom}
@@ -59,19 +63,28 @@ class ForceTouchMap extends React.Component {
 
                 ></Map>
             </div>
-            <div>
-                <Button id="zoomIn" ref={elem => this.nv = elem} variant="contained">Zoom in</Button>
-                <Button id="zoomOut" ref={elem => this.nv2 = elem} variant="contained">Zoom out</Button>
+            <div className='bottomDiv'>
                 <FormGroup>
-                    <FormControlLabel control={<Switch checked={this.state.mapGesture === "auto" ? true : false} onChange={this.onChange} />} label="Gesture" />
+                    <FormControlLabel control={<Switch checked={this.state.mapGesture === "none" ? true : false} onChange={this.onChange} />} label="Force Control" />
                 </FormGroup>
+                <div>
+                <Button id="zoomIn" ref={elem => this.nv = elem} variant="contained" startIcon={<ZoomInIcon />} disableElevation disabled={this.state.mapGesture === "none" ? false : true}>Zoom in</Button>
+                <Button id="zoomOut" ref={elem => this.nv2 = elem} variant="contained" startIcon={<ZoomOutIcon />} disableElevation style={{"margin": "0px 0px 0px 16px"}} disabled={this.state.mapGesture === "none" ? false : true}>Zoom out</Button>
+                </div>
             </div>
+            
+            <div className='centerDiv'></div>
         </div>
 
     }
 
 
     forceChanged = (event) => {
+
+        if(this.state.mapGesture !== "none") {
+            return;
+        }
+
         // Perform operations in response to changes in force
         if ("webkitForce" in event) {
             // Retrieve the force level
@@ -111,20 +124,20 @@ class ForceTouchMap extends React.Component {
 
                 if (this.state.mouseMoveX) {
                     if (this.state.mouseMoveX > panningDiagonalSensitivity) {
-                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetWidth / 8));
+                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetWidth / 10));
 
                     } else if (this.state.mouseMoveX < -panningDiagonalSensitivity) {
-                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetWidth / 8));
+                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetWidth / 10));
 
                     }
                 }
 
                 if (this.state.mouseMoveY) {
                     if (this.state.mouseMoveY > panningDiagonalSensitivity) {
-                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetHeight / 8));
+                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetHeight / 10));
 
                     } else if (this.state.mouseMoveY < -panningDiagonalSensitivity) {
-                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetHeight / 8));
+                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetHeight / 10));
                     }
                 }
 
