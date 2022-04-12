@@ -4,6 +4,7 @@ import { Map, GoogleApiWrapper } from 'google-maps-react';
 import './ForceTouchMap.css';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import SelectInput from '@mui/material/Select/SelectInput';
 
 class ForceTouchMap extends React.Component {
     
@@ -25,6 +26,7 @@ class ForceTouchMap extends React.Component {
             mouseDownY: null,
             mouseMoveX: null,
             mouseMoveY: null,
+            isPanning: false
         }
     }
 
@@ -79,7 +81,7 @@ class ForceTouchMap extends React.Component {
     }
 
 
-    forceChanged = (event) => {
+    forceChanged = async (event) => {
 
         if(this.state.mapGesture !== "none") {
             return;
@@ -119,33 +121,59 @@ class ForceTouchMap extends React.Component {
                     })
                 }
             } else if (event.currentTarget.id === "mapDiv") {
+                if(this.state.isPanning) {
+                    console.log("panning");
+                    return
+                }
+
+                this.setState({
+                    isPanning: true
+                })
+                
+
                 var panByX = 0;
                 var panByY = 0;
 
+                console.log(forceLevel, forceMultipler * forceLevel);
+
                 if (this.state.mouseMoveX) {
                     if (this.state.mouseMoveX > panningDiagonalSensitivity) {
-                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetWidth / 10));
+                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetWidth / panningAmountFactor));
 
                     } else if (this.state.mouseMoveX < -panningDiagonalSensitivity) {
-                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetWidth / 10));
+                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetWidth / panningAmountFactor));
 
                     }
                 }
 
                 if (this.state.mouseMoveY) {
                     if (this.state.mouseMoveY > panningDiagonalSensitivity) {
-                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetHeight / 10));
+                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetHeight / panningAmountFactor));
 
                     } else if (this.state.mouseMoveY < -panningDiagonalSensitivity) {
-                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetHeight / 10));
+                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetHeight / panningAmountFactor));
                     }
                 }
 
                 this.mapRef.map.panBy(panByX, panByY);
 
+                
+
+                // console.log("Sleeping")
+                await this.sleep(100);
+                // console.log("sleeping done")
+                this.setState({
+                    isPanning: false
+                })
+
+
             }
 
         }
+    }
+
+     sleep = async (msec) => {
+        return new Promise(resolve => setTimeout(resolve, msec));
     }
 
     mouseMove = (props, map, event) => {
@@ -217,7 +245,7 @@ class ForceTouchMap extends React.Component {
 
                 // console.log("Mouse Move1", "Start: ", this.state.mouseDownX, this.state.mouseDownY, "End: ", this.state.mouseMoveX, this.state.mouseMoveY);
                 // console.log("Mouse Move2", "Start: ", this.state.mouseDownX - this.state.mouseDownX, this.state.mouseDownY - this.state.mouseDownY, "End: ", this.state.mouseMoveX - this.state.mouseDownX, this.state.mouseMoveY - this.state.mouseDownY);
-                console.log("Mouse Move2", "Start: ", this.state.mouseDownX - this.state.mouseDownX, this.state.mouseDownY - this.state.mouseDownY, "End: ", this.state.mouseMoveX, this.state.mouseMoveY);
+                // console.log("Mouse Move2", "Start: ", this.state.mouseDownX - this.state.mouseDownX, this.state.mouseDownY - this.state.mouseDownY, "End: ", this.state.mouseMoveX, this.state.mouseMoveY);
 
             }
         }
@@ -268,6 +296,7 @@ class ForceTouchMap extends React.Component {
 
 const forceMultipler = 5;
 const panningDiagonalSensitivity = 50
+const panningAmountFactor = 8
 
 const in_min = 0;
 const in_max = forceMultipler * 3;
