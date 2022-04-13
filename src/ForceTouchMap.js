@@ -138,20 +138,20 @@ class ForceTouchMap extends React.Component {
 
                 if (this.state.mouseMoveX) {
                     if (this.state.mouseMoveX > panningDiagonalSensitivity) {
-                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetWidth / panningAmountFactor));
+                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetWidth / panningAmountFactor));
 
                     } else if (this.state.mouseMoveX < -panningDiagonalSensitivity) {
-                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetWidth / panningAmountFactor));
+                        panByX = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetWidth / panningAmountFactor));
 
                     }
                 }
 
                 if (this.state.mouseMoveY) {
                     if (this.state.mouseMoveY > panningDiagonalSensitivity) {
-                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetHeight / panningAmountFactor));
+                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetHeight / panningAmountFactor));
 
                     } else if (this.state.mouseMoveY < -panningDiagonalSensitivity) {
-                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, -this.mapRef.mapRef.current.offsetHeight / panningAmountFactor));
+                        panByY = Math.round(rangeMap(forceMultipler * forceLevel, in_min, in_max, 0, this.mapRef.mapRef.current.offsetHeight / panningAmountFactor));
                     }
                 }
 
